@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "test": "jest --coverage"
+    "test": "jest --rootDir=. --coverage"
   },
   "dependencies": {
     "cors": "^2.8.5",

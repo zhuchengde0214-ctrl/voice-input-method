@@ -21,7 +21,12 @@ function removeFillers(text) {
   let out = text;
   for (const w of FILLER_WORDS) {
     const escaped = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    out = out.replace(new RegExp(escaped, 'gi'), '');
+    // English fillers are short and risk swallowing substrings inside real
+    // words (e.g. "er" inside "Kubernetes"). Anchor them on word boundaries.
+    // CJK fillers have no word-boundary concept, so we keep substring match.
+    const isAscii = /^[\x00-\x7F]+$/.test(w);
+    const pattern = isAscii ? `\\b${escaped}\\b` : escaped;
+    out = out.replace(new RegExp(pattern, 'gi'), '');
   }
   return out.replace(/\s{2,}/g, ' ').trim();
 }
