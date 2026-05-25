@@ -1,11 +1,7 @@
-// Thin REST client for the backend. Resolves the API base from a meta tag
-// when present, so the same bundle can be served behind a proxy without
-// rebuilding.
-
-const meta = document.querySelector('meta[name="api-base"]');
-export const API_BASE =
-  (meta && meta.getAttribute('content')) ||
-  (location.port === '3000' ? 'http://localhost:3001' : `${location.origin}`);
+// Thin REST client for the backend. The backend serves this static bundle
+// from the same origin, so all API calls are made with relative paths and
+// work transparently behind any port-forward or reverse proxy.
+export const API_BASE = '';
 
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
