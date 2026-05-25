@@ -22,6 +22,12 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Serve the frontend from the same origin so the browser only needs one
+// reachable port. Keeps deployment dead-simple behind reverse proxies and
+// SSH/IDE port-forwarding.
+const FRONTEND_DIR = path.join(__dirname, '..', '..', 'frontend');
+app.use(express.static(FRONTEND_DIR));
+
 app.use((err, _req, res, _next) => {
   // Surface a stable error shape; never leak stack traces to the client.
   const status = err.status || 500;
