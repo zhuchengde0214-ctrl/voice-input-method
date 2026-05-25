@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="基于 Web Speech API 的语音输入法，提升中英文文本输入效率" />
+  <title>语音输入法 · Voice Input Method</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">🎙️</span>
+      <h1>语音输入法</h1>
+    </div>
+    <div class="topbar-actions">
+      <select id="lang-select" aria-label="识别语言" title="识别语言">
+        <option value="zh-CN" selected>中文（简体）</option>
+        <option value="en-US">English (US)</option>
+        <option value="zh-HK">繁体中文（香港）</option>
+        <option value="ja-JP">日本語</option>
+      </select>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="切换主题" title="切换主题">🌓</button>
+    </div>
+  </header>
+
+  <main class="layout" role="main">
+    <section class="editor-pane" aria-labelledby="editor-title">
+      <div class="pane-header">
+        <h2 id="editor-title">编辑区</h2>
+        <span id="status-pill" class="status-pill status-idle" aria-live="polite">空闲</span>
+      </div>
+
+      <div class="editor-toolbar" role="toolbar" aria-label="编辑工具栏">
+        <button id="record-btn" class="primary-btn" type="button" aria-pressed="false">
+          <span class="rec-dot" aria-hidden="true"></span>
+          <span id="record-label">开始录音</span>
+        </button>
+        <button id="enhance-btn" class="ghost-btn" type="button">智能后处理</button>
+        <button id="copy-btn" class="ghost-btn" type="button">复制</button>
+        <button id="clear-btn" class="ghost-btn" type="button">清空</button>
+        <button id="save-btn" class="ghost-btn" type="button">保存到历史</button>
+      </div>
+
+      <div class="editor-shell">
+        <textarea
+          id="editor"
+          class="editor"
+          placeholder="点击「开始录音」后说话，文字会实时出现在这里…&#10;支持语音命令：删除 / 换行 / 句号 / 全选 / 清空 / 停止"
+          aria-label="文本编辑区"
+          spellcheck="true"
+        ></textarea>
+        <div id="interim" class="interim" aria-live="polite"></div>
+      </div>
+
+      <div class="editor-meta">
+        <span id="char-count">0 字符</span>
+        <span id="latency-info" class="muted">首字延迟：—</span>
+      </div>
+    </section>
+
+    <aside class="side-pane" aria-label="侧栏">
+      <div class="tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true" data-tab="hotwords">热词</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="history">历史</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="help">帮助</button>
+      </div>
+
+      <section id="tab-hotwords" class="tab-panel active" role="tabpanel">
+        <p class="muted">添加专业术语作为热词，识别时会自动校正常见误读。</p>
+        <form id="hotword-form" class="hotword-form">
+          <input id="hw-term" type="text" placeholder="标准词，如 Kubernetes" required />
+          <input id="hw-aliases" type="text" placeholder="别名，逗号分隔，如 k8s,K8S" />
+          <button class="primary-btn" type="submit">添加</button>
+        </form>
+        <ul id="hotword-list" class="card-list" aria-live="polite"></ul>
+      </section>
+
+      <section id="tab-history" class="tab-panel" role="tabpanel" hidden>
+        <div class="row-between">
+          <p class="muted">最近 200 条转写记录</p>
+          <button id="history-clear" class="ghost-btn small" type="button">清空</button>
+        </div>
+        <ul id="history-list" class="card-list" aria-live="polite"></ul>
+      </section>
+
+      <section id="tab-help" class="tab-panel" role="tabpanel" hidden>
+        <h3>语音命令</h3>
+        <ul class="help-list">
+          <li><code>删除</code> / <code>退格</code> — 删除最后一个字符</li>
+          <li><code>换行</code> / <code>回车</code> — 插入换行</li>
+          <li><code>空格</code> — 插入空格</li>
+          <li><code>句号</code> / <code>逗号</code> / <code>问号</code> — 插入对应标点</li>
+          <li><code>清空</code> / <code>全选</code> / <code>复制</code> — 编辑控制</li>
+          <li><code>停止</code> — 停止录音</li>
+        </ul>
+        <h3>键盘快捷键</h3>
+        <ul class="help-list">
+          <li><kbd>Ctrl/⌘</kbd> + <kbd>Space</kbd> — 切换录音</li>
+          <li><kbd>Ctrl/⌘</kbd> + <kbd>Enter</kbd> — 智能后处理当前文本</li>
+        </ul>
+      </section>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="js/api.js"></script>
+  <script type="module" src="js/recognizer.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
